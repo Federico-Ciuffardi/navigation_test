@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find navigation_test)/worlds/navigation_test.world"/>
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+    <arg name="headless" value="false"/> 
+    <arg name="recording" value="false"/>
+    <arg name="debug" value="false"/>
+  </include>
+
+   <include file="$(find p3dx_gazebo)/launch/p3dx.launch" >
+        <arg name="x"  value="0" />
+        <arg name="y"  value="-5" />
+        <arg name="z"  value="0.1" />
+        <arg name="ns" value="p3dx_1" />
+  </include>
+  <group ns="p3dx_1">
+    <node pkg="navigation_test" type="navigation_test_node" name="move_controller" required="true" />
+    <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+      <rosparam file="$(find navigation_test)/yaml/costmap_common_params.yaml" command="load" ns="local_costmap" />
+      <rosparam file="$(find navigation_test)/yaml/local_costmap_params.yaml" command="load" />
+      <rosparam file="$(find navigation_test)/yaml/global_costmap_params.yaml" command="load" /> 
+      <rosparam file="$(find navigation_test)/yaml/base_local_planner_params.yaml" command="load" />
+       <!-- Set tf_prefix for frames explicity, overwriting defaults -->
+      <!-- <param name="global_costmap/scan/sensor_frame" value="p3dx_1/base_link"/> -->
+      <!-- <param name="global_costmap/obstacle_layer/scan/sensor_frame" value="p3dx_1/base_link"/> -->
+      <param name="costmap_common_params/laser_scan_sensor/sensor_frame" value="p3dx_1_tf/lms100"/>
+      <param name="costmap_common_params/laser_scan_sensor/topic" value="p3dx_1/laser/scan"/>
+
+      <param name="global_costmap/global_frame" value="p3dx_1_tf/odom"/>
+      <param name="global_costmap/robot_base_frame" value="p3dx_1_tf/base_link"/>
+
+      <!-- <param name="local_costmap/laser_scan_sensor/sensor_frame" value="p3dx_1/lms100"/> -->
+      <!-- <param name="local_costmap/laser_scan_sensor/topic" value="p3dx_1/LaserScan"/> -->
+      <param name="local_costmap/global_frame" value="p3dx_1_tf/odom"/>
+      <param name="local_costmap/robot_base_frame" value="p3dx_1_tf/base_link"/>
+
+    </node>
+
+  </group>
+
+</launch>
