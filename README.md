@@ -1,4 +1,4 @@
-# navigation_test 
+# waypoint_navigation 
 
 A simple ros-gazebo simulation used as a benchmark.
 
@@ -14,6 +14,6 @@ A simple ros-gazebo simulation used as a benchmark.
 
 * Execute: `git clone https://github.com/Federico-Ciuffardi/pioneer_p3dx_model`
 
-* Execute: `git clone https://github.com/Federico-Ciuffardi/navigation_test`
+* Execute: `git clone https://github.com/Federico-Ciuffardi/waypoint_navigation`
 
-* From now on execute the following command to run the simulation:`~/catkin_ws/src/navigation_test/run_simulation.sh`
+* From now on execute the following command to run the simulation:`~/catkin_ws/src/waypoint_navigation/run_simulation.sh`

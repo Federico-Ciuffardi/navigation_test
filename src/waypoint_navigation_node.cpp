@@ -8,6 +8,7 @@ typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseCl
 MoveBaseClient* ac;
 move_base_msgs::MoveBaseGoal goal;
 string ns;
+ros::NodeHandle *n;
 
 void followWaypoint(float x, float y){
 
@@ -31,33 +32,39 @@ void followWaypoint(float x, float y){
     ROS_INFO("Goal failed");
 }
 
+void waypointCallback(const geometry_msgs::Point::ConstPtr &point) {
+  followWaypoint(point->x, point->y);
+}
+
 int main(int argc, char** argv){
   ros::init(argc, argv, "simple_navigation_goals");
 
-  ns = ros::this_node::getNamespace();
+  ros::NodeHandle n;
 
   //tell the action client that we want to spin a thread by default
-  ac = new MoveBaseClient(ns + "/move_base", true);
+  ac = new MoveBaseClient("move_base", true);
 
   //wait for the action server to come up
   while(!ac->waitForServer(ros::Duration(5.0))){
-  ROS_INFO_STREAM(ns + "/move_base");
     ROS_INFO("Waiting for the move_base action server to come up");
   }
 
-  int id = ns.back() - '0'; 
-  int widthDiv2 = 3;
-  int center = id*widthDiv2*3;
+  ros::Subscriber waypoint_sub = n.subscribe("waypoint", 1, waypointCallback);
 
+  ros::spin();
 
-  followWaypoint(center, center);
-  followWaypoint(center + 3, center);
-  while(true){
-    followWaypoint(center + 3, center + 3);
-    followWaypoint(center + -3, center + 3);
-    followWaypoint(center + -3, center + -3);
-    followWaypoint(center + 3, center + -3);
-  }
+  // TEST (old)
+  /* int id = ns.back() - '0'; */ 
+  /* int widthDiv2 = 3; */
+  /* int center = id*widthDiv2*3; */
+  /* followWaypoint(center, center); */
+  /* followWaypoint(center + 3, center); */
+  /* while(true){ */
+  /*   followWaypoint(center + 3, center + 3); */
+  /*   followWaypoint(center + -3, center + 3); */
+  /*   followWaypoint(center + -3, center + -3); */
+  /*   followWaypoint(center + 3, center + -3); */
+  /* } */
 
   free(ac);
   return 0;
